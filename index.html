@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Transaction Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-r from-blue-50 to-green-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <h1 class="text-3xl font-bold text-center mb-8 text-purple-600">Financial Transaction Manager</h1>
+
+        <!-- Navigation Tabs -->
+        <div class="flex flex-wrap gap-2 mb-6">
+            <button onclick="showTab('transaction')" class="tab-btn bg-purple-600 text-white px-4 py-2 rounded-lg">Transactions</button>
+            <button onclick="showTab('modes')" class="tab-btn bg-blue-600 text-white px-4 py-2 rounded-lg">Payment Modes</button>
+            <button onclick="showTab('ledgers')" class="tab-btn bg-green-600 text-white px-4 py-2 rounded-lg">Ledgers</button>
+            <button onclick="showTab('history')" class="tab-btn bg-yellow-600 text-white px-4 py-2 rounded-lg">History</button>
+            <button onclick="showTab('summary')" class="tab-btn bg-red-600 text-white px-4 py-2 rounded-lg">Summary</button>
+        </div>
+
+        <!-- Transaction Form Section -->
+        <div id="transaction" class="tab-content bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-purple-600">New Transaction</h2>
+            <form id="transactionForm" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Transaction Type</label>
+                        <select id="transactionType" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-purple-500" required>
+                            <option value="Payment">Payment</option>
+                            <option value="Receipt">Receipt</option>
+                            <option value="Contra">Contra</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Date</label>
+                        <input type="date" id="date" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-purple-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Payment Mode</label>
+                        <select id="paymentMode" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-purple-500" required></select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Ledger</label>
+                        <select id="ledger" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-purple-500" required></select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Amount</label>
+                        <input type="number" id="amount" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-purple-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Remarks</label>
+                        <input type="text" id="remarks" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-purple-500">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-purple-600 text-white py-3 px-4 rounded-md hover:bg-purple-700 transform hover:scale-105 transition-all">
+                    Save Transaction
+                </button>
+            </form>
+        </div>
+
+        <!-- Payment Modes Section -->
+        <div id="modes" class="tab-content hidden bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-blue-600">Payment Modes</h2>
+            <div class="flex flex-col gap-4">
+                <div class="flex gap-2">
+                    <input type="text" id="newPaymentMode" class="flex-1 p-2 border rounded-md" placeholder="Mode Name">
+                    <input type="number" id="modeOpeningBalance" class="w-32 p-2 border rounded-md" placeholder="Opening Balance">
+                    <button onclick="addPaymentMode()" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
+                        Add Mode
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="bg-blue-50">
+                                <th class="px-4 py-2">Mode</th>
+                                <th class="px-4 py-2">Opening Balance</th>
+                                <th class="px-4 py-2">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentModesList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ledgers Section -->
+        <div id="ledgers" class="tab-content hidden bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-green-600">Ledgers</h2>
+            <div class="flex flex-col gap-4">
+                <div class="flex gap-2">
+                    <input type="text" id="newLedger" class="flex-1 p-2 border rounded-md" placeholder="Ledger Name">
+                    <input type="number" id="ledgerOpeningBalance" class="w-32 p-2 border rounded-md" placeholder="Opening Balance">
+                    <button onclick="addLedger()" class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
+                        Add Ledger
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="bg-green-50">
+                                <th class="px-4 py-2">Ledger</th>
+                                <th class="px-4 py-2">Opening Balance</th>
+                                <th class="px-4 py-2">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledgersList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transaction History -->
+        <div id="history" class="tab-content hidden bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-yellow-600">Transaction History</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="bg-yellow-50">
+                            <th class="px-4 py-2">Date</th>
+                            <th class="px-4 py-2">Type</th>
+                            <th class="px-4 py-2">Mode</th>
+                            <th class="px-4 py-2">Ledger</th>
+                            <th class="px-4 py-2">Amount</th>
+                            <th class="px-4 py-2">Remarks</th>
+                            <th class="px-4 py-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsList"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Summary Section -->
+        <div id="summary" class="tab-content hidden bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4 text-red-600">Ledger Summary</h2>
+            <div class="flex gap-2 mb-4">
+                <select id="summaryPaymentMode" class="p-2 border rounded-md">
+                    <option value="">Select Payment Mode</option>
+                </select>
+                <select id="summaryLedger" class="p-2 border rounded-md">
+                    <option value="">Select Ledger</option>
+                </select>
+                <button onclick="filterSummary()" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700">
+                    Filter
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="bg-red-50">
+                            <th class="px-4 py-2">Ledger</th>
+                            <th class="px-4 py-2">Opening Balance</th>
+                            <th class="px-4 py-2">Payments</th>
+                            <th class="px-4 py-2">Receipts</th>
+                            <th class="px-4 py-2">Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ledgerSummary"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let paymentModes = [{name: 'Bank1', balance: 1000}, {name: 'Bank2', balance: 2000}, {name: 'Cash', balance: 500}];
+        let ledgers = [{name: 'Salary', balance: 0}, {name: 'Rent', balance: 0}, {name: 'Utilities', balance: 0}, {name: 'Sales', balance: 0}];
+        let transactions = [];
+        let currentEditingId = null;
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+        }
+
+        function init() {
+            updatePaymentModesList();
+            updateLedgersList();
+            updatePaymentModesDropdown();
+            updateLedgersDropdown();
+            updateTransactionsList();
+            updateLedgerSummary();
+            showTab('transaction');
+        }
+
+        function addPaymentMode() {
+            const name = document.getElementById('newPaymentMode').value.trim();
+            const balance = parseFloat(document.getElementById('modeOpeningBalance').value) || 0;
+            if (name && !paymentModes.some(m => m.name === name)) {
+                paymentModes.push({name, balance});
+                updatePaymentModesList();
+                updatePaymentModesDropdown();
+                document.getElementById('newPaymentMode').value = '';
+                document.getElementById('modeOpeningBalance').value = '';
+            }
+        }
+
+        function updatePaymentModesList() {
+            const list = document.getElementById('paymentModesList');
+            list.innerHTML = paymentModes.map(mode => `
+                <tr>
+                    <td class="px-4 py-2">${mode.name}</td>
+                    <td class="px-4 py-2">${mode.balance.toFixed(2)}</td>
+                    <td class="px-4 py-2">
+                        <button onclick="removePaymentMode('${mode.name}')" class="text-red-600 hover:text-red-800">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function addLedger() {
+            const name = document.getElementById('newLedger').value.trim();
+            const balance = parseFloat(document.getElementById('ledgerOpeningBalance').value) || 0;
+            if (name && !ledgers.some(l => l.name === name)) {
+                ledgers.push({name, balance});
+                updateLedgersList();
+                updateLedgersDropdown();
+                document.getElementById('newLedger').value = '';
+                document.getElementById('ledgerOpeningBalance').value = '';
+            }
+        }
+
+        function updateLedgersList() {
+            const list = document.getElementById('ledgersList');
+            list.innerHTML = ledgers.map(ledger => `
+                <tr>
+                    <td class="px-4 py-2">${ledger.name}</td>
+                    <td class="px-4 py-2">${ledger.balance.toFixed(2)}</td>
+                    <td class="px-4 py-2">
+                        <button onclick="removeLedger('${ledger.name}')" class="text-red-600 hover:text-red-800">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updatePaymentModesDropdown() {
+            const select = document.getElementById('paymentMode');
+            select.innerHTML = paymentModes.map(mode => 
+                `<option value="${mode.name}">${mode.name}</option>`
+            ).join('');
+            updateSummaryPaymentModes();
+        }
+
+        function updateLedgersDropdown() {
+            const select = document.getElementById('ledger');
+            select.innerHTML = ledgers.map(ledger => 
+                `<option value="${ledger.name}">${ledger.name}</option>`
+            ).join('');
+            updateSummaryLedgers();
+        }
+
+        function removePaymentMode(name) {
+            paymentModes = paymentModes.filter(m => m.name !== name);
+            updatePaymentModesList();
+            updatePaymentModesDropdown();
+        }
+
+        function removeLedger(name) {
+            ledgers = ledgers.filter(l => l.name !== name);
+            updateLedgersList();
+            updateLedgersDropdown();
+        }
+
+        function editTransaction(id) {
+            const transaction = transactions[id];
+            currentEditingId = id;
+            
+            document.getElementById('date').value = transaction.date;
+            document.getElementById('transactionType').value = transaction.type;
+            document.getElementById('paymentMode').value = transaction.mode;
+            document.getElementById('ledger').value = transaction.ledger;
+            document.getElementById('amount').value = transaction.amount;
+            document.getElementById('remarks').value = transaction.remarks;
+            
+            showTab('transaction');
+        }
+
+        function deleteTransaction(id) {
+            transactions.splice(id, 1);
+            updateTransactionsList();
+            updateLedgerSummary();
+        }
+
+        document.getElementById('transactionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const transaction = {
+                date: document.getElementById('date').value,
+                type: document.getElementById('transactionType').value,
+                mode: document.getElementById('paymentMode').value,
+                ledger: document.getElementById('ledger').value,
+                amount: parseFloat(document.getElementById('amount').value),
+                remarks: document.getElementById('remarks').value
+            };
+
+            if (currentEditingId !== null) {
+                transactions[currentEditingId] = transaction;
+                currentEditingId = null;
+            } else {
+                transactions.push(transaction);
+            }
+
+            updateTransactionsList();
+            updateLedgerSummary();
+            this.reset();
+            showTab('history');
+        });
+
+        function updateTransactionsList() {
+            const list = document.getElementById('transactionsList');
+            list.innerHTML = transactions.map((t, index) => `
+                <tr>
+                    <td class="px-4 py-2">${t.date}</td>
+                    <td class="px-4 py-2">${t.type}</td>
+                    <td class="px-4 py-2">${t.mode}</td>
+                    <td class="px-4 py-2">${t.ledger}</td>
+                    <td class="px-4 py-2">${t.amount.toFixed(2)}</td>
+                    <td class="px-4 py-2">${t.remarks}</td>
+                    <td class="px-4 py-2">
+                        <button onclick="editTransaction(${index})" class="text-blue-600 hover:text-blue-800 mr-2">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button onclick="deleteTransaction(${index})" class="text-red-600 hover:text-red-800">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateLedgerSummary() {
+            const summary = {};
+            ledgers.forEach(ledger => {
+                summary[ledger.name] = {
+                    opening: ledger.balance,
+                    payments: 0,
+                    receipts: 0
+                };
+            });
+
+            transactions.forEach(t => {
+                if (t.type === 'Payment') {
+                    summary[t.ledger].payments += t.amount;
+                } else if (t.type === 'Receipt') {
+                    summary[t.ledger].receipts += t.amount;
+                }
+            });
+
+            const tbody = document.getElementById('ledgerSummary');
+            tbody.innerHTML = Object.entries(summary).map(([ledger, data]) => `
+                <tr>
+                    <td class="px-4 py-2">${ledger}</td>
+                    <td class="px-4 py-2">${data.opening.toFixed(2)}</td>
+                    <td class="px-4 py-2">${data.payments.toFixed(2)}</td>
+                    <td class="px-4 py-2">${data.receipts.toFixed(2)}</td>
+                    <td class="px-4 py-2">${(data.opening + data.receipts - data.payments).toFixed(2)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateSummaryPaymentModes() {
+            const select = document.getElementById('summaryPaymentMode');
+            select.innerHTML = paymentModes.map(mode => 
+                `<option value="${mode.name}">${mode.name}</option>`
+            ).join('');
+        }
+
+        function updateSummaryLedgers() {
+            const select = document.getElementById('summaryLedger');
+            select.innerHTML = ledgers.map(ledger => 
+                `<option value="${ledger.name}">${ledger.name}</option>`
+            ).join('');
+        }
+
+        function filterSummary() {
+            const selectedMode = document.getElementById('summaryPaymentMode').value;
+            const selectedLedger = document.getElementById('summaryLedger').value;
+
+            // Add filter logic here if needed
+        }
+
+        init();
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
